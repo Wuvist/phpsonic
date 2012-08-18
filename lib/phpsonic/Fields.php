@@ -8,6 +8,8 @@ class Field
 	static $field_order = 0;
 
 	var $_field_order;
+	var $_field_name;
+	var $_field_value;
 
 	function Field()
 	{
@@ -18,6 +20,11 @@ class Field
 	{
 		Field::$field_order += 1;
 		return Field::$field_order;
+	}
+
+	function __toString()
+	{
+		return $this->_field_name;
 	}
 }
 

@@ -7,22 +7,25 @@ require_once("Fields.php");
 
 Class SonicObj
 {
-	var $_field_values;
+	var $_field_values = array();
 
-	public function __get( $prop )
+	public function __get($prop)
 	{
-		return $prop;
+		return $this->_field_values[$prop]->_field_value;
 	}
 
-	public function __set( $prop, $value )
+	public function __set($prop, $value)
 	{
-
-		return;
+		$this->_field_values[$prop]->_field_value = $value;
 	}
 
 	function SonicObj()
 	{
-		var_dump($this->_fields);
+		foreach($this->_fields as $k => $v)
+		{
+			eval('$this->_field_values[$k]  = new '.$v.";");
+			$this->_field_values[$k]->_field_name = $k;
+		}
 	}
 }
 ?>
