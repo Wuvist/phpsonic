@@ -43,4 +43,12 @@ class IntField extends Field
 		parent::__construct();
 	}
 }
+
+class ObjField extends Field
+{
+	function ObjField()
+	{
+		parent::__construct();
+	}
+}
 ?>

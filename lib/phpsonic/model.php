@@ -11,4 +11,14 @@ class Person extends SonicObj
 	);
 }
 
+class Book extends SonicObj
+{
+	var $_fields = array(
+	    "first_name" => "StringField",
+	    "last_name" => "StringField",
+	    "age" => "IntField",	    
+	);
+}
+
+
 ?>
