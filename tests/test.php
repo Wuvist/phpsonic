@@ -2,24 +2,25 @@
 
 require_once("../lib/phpsonic/model.php");
 
-SonicObj::$_conn = mysql_connect("localhost", "root", "");
-mysql_select_db('phpsonic_test', SonicObj::$_conn);
+SonicObj::$_db = new PDO( 
+    'mysql:host=localhost;dbname=phpsonic_test', 
+    'root', 
+    '', 
+    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8") 
+);
+
+// echo Person::build_table();
+// echo Book::build_table();
 
 
-// $result = mysql_query('SELECT count(*) from Author');
 
-// var_dump($result);
-
-$p = new Person;
-$p->first_name = "Wei";
-$p->last_name = "Weng";
-
+$p = Person::get(3);
 echo $p->first_name;
 echo "\n";
 echo $p->last_name;
+echo "\n";
+echo $p->id;
 
-echo Person::build_table();
-echo Book::build_table();
 
 // echo Person::first_name->_field_order;
 // echo "\n";
