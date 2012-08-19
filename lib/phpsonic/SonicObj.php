@@ -32,6 +32,8 @@ abstract Class SonicObj
 
 	public static function get($id)
 	{
+		//todo: should support multi-get
+
 		$class_name = get_called_class();		
 		$result = SonicObj::$_db->query("select * FROM $class_name where id=$id");
 
@@ -68,6 +70,28 @@ sql;
 		SonicObj::$_db->exec($sql);
 	}
 
+	static function get_all_ids()
+	{
+		$class_name = get_called_class();
+		$result = SonicObj::$_rs->zrevrange($class_name."_ids", 0, -1);
+		return array_values($result);
+	}
+
+	static function get_all_objs()
+	{
+		$cls = get_called_class();
+		$ids = $cls::get_all_ids();
+		$result = array();
+
+		//todo: should batch get to increase performance
+		foreach($ids as $id)
+		{
+			$result[] = $cls::get($id);
+		}
+
+		return $result;
+	}
+
 	function save()
 	{			
 		if($this->_is_new)
@@ -97,7 +121,7 @@ sql;
 		$query->execute(array(':data' => $this->_to_binary()));
 		$this->id = SonicObj::$_db->lastInsertId();
 
-		// $this->_rs.zadd($this->table_name + "_ids", **{str($this->id):$this->id});
+		SonicObj::$_rs->zadd($this->_table_name."_ids", $this->id, $this->id);
 
 		// foreach($this->_indexes as $index)
 		// {
