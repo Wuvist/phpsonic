@@ -30,10 +30,6 @@ class Field
 
 class StringField extends Field
 {
-	function StringField()
-	{
-		parent::__construct();
-	}
 }
 
 class BoolField extends Field
@@ -42,17 +38,9 @@ class BoolField extends Field
 
 class IntField extends Field
 {
-	function StringField()
-	{
-		parent::__construct();
-	}
 }
 
 class ObjField extends Field
 {
-	function ObjField()
-	{
-		parent::__construct();
-	}
 }
 ?>
