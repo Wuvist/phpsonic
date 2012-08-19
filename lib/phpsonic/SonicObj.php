@@ -51,7 +51,7 @@ abstract Class SonicObj
 			$this->_field_values[$k]->_field_name = $k;
 		}
 
-		$this->table_name = get_called_class();
+		$this->_table_name = get_called_class();
 	}
 
 	static function build_table()
@@ -92,7 +92,7 @@ sql;
 
 	function _insert()
 	{
-		$sql = "insert into `$this->table_name` (data)values(:data)";
+		$sql = "insert into `$this->_table_name` (data)values(:data)";
 		$query = SonicObj::$_db->prepare($sql);
 		$query->execute(array(':data' => $this->_to_binary()));
 		$this->id = SonicObj::$_db->lastInsertId();
@@ -117,7 +117,7 @@ sql;
 
 	function _update()
 	{
-		$sql = "update `$this->table_name` set data=:data where id=:id";
+		$sql = "update `$this->_table_name` set data=:data where id=:id";
 		$query = SonicObj::$_db->prepare($sql);
 		$query->execute(array(':data' => $this->_to_binary(), ':id' => $this->id));
 	}
