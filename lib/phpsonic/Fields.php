@@ -36,6 +36,10 @@ class StringField extends Field
 	}
 }
 
+class BoolField extends Field
+{
+}
+
 class IntField extends Field
 {
 	function StringField()
