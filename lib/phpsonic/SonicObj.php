@@ -70,6 +70,31 @@ sql;
 		SonicObj::$_db->exec($sql);
 	}
 
+	static function _get_key($params)
+	{
+		$key = get_called_class();
+		$param_keys = array_keys($params);
+		sort($param_keys);
+
+		foreach ($param_keys as $param_key) {
+			$key = $key.":".$param_key.":".$params[$param_key];
+		}
+
+		return $key;
+	}
+
+	function _get_index_key($index_field_names)
+	{
+		$cls = get_called_class();		
+		$params = array();
+
+		foreach ($index_field_names as $field_name) {
+			$params[$field_name] = $this->__get($field_name);
+		}
+
+		return $cls::_get_key($params);
+	}
+
 	static function get_all_ids()
 	{
 		$class_name = get_called_class();
@@ -90,6 +115,28 @@ sql;
 		}
 
 		return $result;
+	}
+
+	static function find_all_ids($params)
+	{
+		$cls = get_called_class();		
+		$key = $cls::_get_key($params);
+		$result = SonicObj::$_rs->zrevrange($key, 0, -1);
+		return array_values($result);
+	}
+
+	static function find_all_objs($params)
+	{
+		$cls = get_called_class();		
+		$ids = $cls::find_all_ids($params);
+		$result = array();
+
+		//todo: should batch get to increase performance
+		foreach($ids as $id)
+		{
+			$result[] = $cls::get($id);
+		}
+		return $result;		
 	}
 
 	function save()
@@ -123,20 +170,11 @@ sql;
 
 		SonicObj::$_rs->zadd($this->_table_name."_ids", $this->id, $this->id);
 
-		// foreach($this->_indexes as $index)
-		// {
-		// 	keys = $this->get_index_keys(index.field_names)
-		// 	for key in keys:
-		// 		if index.order_by:
-		// 			order_field = $this->__dict__[index.order_by]
-		// 			if order_field == None:
-		// 				score = 0
-		// 			else:
-		// 				score = int(order_field)
-		// 			$this->_rs.zadd(key, **{str($this->id): score})
-		// 		else:
-		// 			$this->_rs.zadd(key, **{str($this->id): $this->id})			
-		// }
+		foreach($this->_indexes as $index)
+		{
+			$key = $this->_get_index_key($index);
+			SonicObj::$_rs->zadd($key, $this->id, $this->id);
+		}
 	}
 
 	function _update()
@@ -144,6 +182,8 @@ sql;
 		$sql = "update `$this->_table_name` set data=:data where id=:id";
 		$query = SonicObj::$_db->prepare($sql);
 		$query->execute(array(':data' => $this->_to_binary(), ':id' => $this->id));
+
+		//todo: must update index!
 	}
 
 	function _to_binary()
